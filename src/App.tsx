@@ -1,7 +1,7 @@
 function App() {
   return (
-    <div>
-      <h1>hello world</h1>
+    <div className="w-sm h-[500px] bg-blue-50 rounded-2xl">
+      <h1>My Highlight App</h1>
     </div>
   );
 }
