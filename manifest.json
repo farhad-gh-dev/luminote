@@ -1,35 +1,31 @@
 {
   "manifest_version": 3,
   "name": "LumiNote",
-  "version": "1.0",
+  "version": "0.0.1",
   "description": "Highlight and save content from websites",
   "permissions": ["storage", "activeTab", "scripting"],
+  "icons": {
+    "16": "public/icon.png",
+    "32": "public/icon.png",
+    "48": "public/icon.png",
+    "128": "public/icon.png"
+  },
   "action": {
     "default_popup": "popup.html",
-    "default_icon": {
-      "16": "images/icon16.png",
-      "48": "images/icon48.png",
-      "128": "images/icon128.png"
-    }
+    "default_icon": "public/icon.png",
+    "default_title": "React Popup"
   },
-  "icons": {
-    "16": "images/icon16.png",
-    "48": "images/icon48.png",
-    "128": "images/icon128.png"
-  },
+  "options_ui": { "page": "options.html", "open_in_tab": true },
+  "background": { "service_worker": "background.js", "type": "module" },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js"],
-      "css": ["highlighter.css"]
+      "js": ["content.js"]
     }
   ],
-  "background": {
-    "service_worker": "background.js"
-  },
   "web_accessible_resources": [
     {
-      "resources": ["images/*.png", "images/*.ico"],
+      "resources": ["*.js", "*.css"],
       "matches": ["<all_urls>"]
     }
   ]
