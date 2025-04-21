@@ -1,44 +1,22 @@
 import { useState, useEffect } from "react";
-import Header from "./components/header";
-import HighlightsContainer from "./features/highlights/highlights-container";
-import { Highlight } from "./features/highlights/highlight-model";
-import { mockHighlights } from "./mock-data";
+import Header from "./components/layout/header";
+import HighlightsList from "./features/highlights/highlights-list";
+import { getHighlights } from "./services/chrome-api";
+import type { Highlight } from "./types";
 
 function App() {
   const [highlights, setHighlights] = useState<Highlight[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Function to load highlights from Chrome storage
     const loadHighlights = async () => {
       try {
-        // In development mode, use mock data if Chrome API is not available
-        if (!chrome.runtime || !chrome.runtime.sendMessage) {
-          console.log("Using mock data (development mode)");
-          setHighlights(mockHighlights);
-          setLoading(false);
-          return;
-        }
-
-        // Request highlights from the background script
-        chrome.runtime.sendMessage(
-          { action: "getHighlights" },
-          (response: Highlight[]) => {
-            if (chrome.runtime.lastError) {
-              console.error(
-                "Error fetching highlights:",
-                chrome.runtime.lastError
-              );
-              setHighlights([]);
-            } else {
-              setHighlights(response || []);
-            }
-            setLoading(false);
-          }
-        );
+        const fetchedHighlights = await getHighlights();
+        setHighlights(fetchedHighlights);
       } catch (error) {
         console.error("Failed to load highlights:", error);
         setHighlights([]);
+      } finally {
         setLoading(false);
       }
     };
@@ -55,7 +33,7 @@ function App() {
           <div className="text-gray-500">Loading highlights...</div>
         </div>
       ) : (
-        <HighlightsContainer initialHighlights={highlights} />
+        <HighlightsList initialHighlights={highlights} />
       )}
     </div>
   );
