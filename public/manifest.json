@@ -3,7 +3,7 @@
   "name": "Luminote",
   "version": "0.0.1",
   "description": "Select text on any page to highlight and save it.",
-  "permissions": ["activeTab", "scripting", "storage"],
+  "permissions": ["activeTab", "scripting", "storage", "tabs", "contextMenus"],
   "action": {
     "default_popup": "index.html",
     "default_title": "Luminote",
@@ -13,6 +13,16 @@
       "128": "icons/icon128.png"
     }
   },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content-script.js"]
+    }
+  ],
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
