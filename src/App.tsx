@@ -35,6 +35,7 @@ function App() {
       ) : (
         <HighlightsList initialHighlights={highlights} />
       )}
+      {JSON.stringify(highlights)}
     </div>
   );
 }

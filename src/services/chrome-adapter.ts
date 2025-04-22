@@ -5,19 +5,41 @@ export function isExtensionEnvironment(): boolean {
   return (
     typeof chrome !== "undefined" &&
     !!chrome.runtime &&
-    !!chrome.runtime.sendMessage
+    !!chrome.runtime.sendMessage &&
+    !!chrome.tabs
   );
 }
 
 /** Sends a message via chrome.runtime.sendMessage */
-export function sendMessage<T = unknown>(message: Message): Promise<T> {
+export function runtimeSendMessage<T = unknown>(message: Message): Promise<T> {
   return new Promise((resolve, reject) => {
-    if (!isExtensionEnvironment()) {
-      reject(new Error("Not in extension environment"));
+    if (!isExtensionEnvironment() || !chrome.runtime?.sendMessage) {
+      reject(new Error("Runtime messaging is not available"));
       return;
     }
     chrome.runtime.sendMessage(message, (response) => {
       if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+      } else {
+        resolve(response as T);
+      }
+    });
+  });
+}
+
+/** Sends a message to a specific tab via chrome.tabs.sendMessage */
+export function tabSendMessage<T = unknown>(
+  tabId: number,
+  message: Message
+): Promise<T> {
+  return new Promise((resolve, reject) => {
+    if (!isExtensionEnvironment() || !chrome.tabs?.sendMessage) {
+      reject(new Error("Tab messaging is not available"));
+      return;
+    }
+    chrome.tabs.sendMessage(tabId, message, (response) => {
+      if (chrome.runtime.lastError) {
+        // Check lastError as tabs.sendMessage uses it too
         reject(chrome.runtime.lastError);
       } else {
         resolve(response as T);

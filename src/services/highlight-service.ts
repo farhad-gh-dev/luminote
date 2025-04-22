@@ -1,31 +1,18 @@
 import { Highlight } from "../types";
 import { storageGet, storageSet } from "./chrome-adapter";
+import { StorageKeys } from "../constants";
 
-/**
- * Stores a highlight in Chrome storage
- */
-export async function saveHighlight(highlight: Highlight): Promise<void> {
-  try {
-    const result = await storageGet<{ highlights?: Highlight[] }>("highlights");
-    const highlights = result.highlights || [];
-    const updatedHighlights = [highlight, ...highlights];
-    await storageSet({ highlights: updatedHighlights });
-  } catch (error) {
-    console.error("Error saving highlight:", error);
-    throw new Error(
-      `Failed to save highlight: ${
-        error instanceof Error ? error.message : String(error)
-      }`
-    );
-  }
-}
+// Provides functions for directly interacting with Chrome storage (via chrome-adapter)
+// to manage highlights. Primarily used by the background script.
 
 /**
  * Retrieves all highlights from Chrome storage
  */
 export async function getHighlights(): Promise<Highlight[]> {
   try {
-    const result = await storageGet<{ highlights?: Highlight[] }>("highlights");
+    const result = await storageGet<{ highlights?: Highlight[] }>(
+      StorageKeys.HIGHLIGHTS
+    );
     return result.highlights || [];
   } catch (error) {
     console.error("Error retrieving highlights:", error);
@@ -38,17 +25,40 @@ export async function getHighlights(): Promise<Highlight[]> {
 }
 
 /**
+ * Stores a highlight in Chrome storage
+ */
+export async function saveHighlight(highlight: Highlight): Promise<void> {
+  try {
+    const result = await storageGet<{ highlights?: Highlight[] }>(
+      StorageKeys.HIGHLIGHTS
+    );
+    const highlights = result.highlights || [];
+    const updatedHighlights = [highlight, ...highlights];
+    await storageSet({ [StorageKeys.HIGHLIGHTS]: updatedHighlights });
+  } catch (error) {
+    console.error("Error saving highlight:", error);
+    throw new Error(
+      `Failed to save highlight: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+  }
+}
+
+/**
  * Deletes a highlight from Chrome storage
  */
 export async function deleteHighlight(id: string): Promise<boolean> {
   try {
-    const result = await storageGet<{ highlights?: Highlight[] }>("highlights");
+    const result = await storageGet<{ highlights?: Highlight[] }>(
+      StorageKeys.HIGHLIGHTS
+    );
     const highlights = result.highlights || [];
     const updatedHighlights = highlights.filter(
       (highlight: Highlight) => highlight.id !== id
     );
 
-    await storageSet({ highlights: updatedHighlights });
+    await storageSet({ [StorageKeys.HIGHLIGHTS]: updatedHighlights });
     return true;
   } catch (error) {
     console.error("Error deleting highlight:", error);

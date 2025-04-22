@@ -1,5 +1,9 @@
-import { isExtensionEnvironment, sendMessage } from "./chrome-adapter";
+import { isExtensionEnvironment, runtimeSendMessage } from "./chrome-adapter";
 import type { Highlight } from "../types";
+import { MessageActions } from "../constants/message-actions";
+
+// Provides an API for UI components (like popup) to communicate
+// with the background script via messages. Does not interact directly with storage.
 
 /**
  * Fetch highlights from the background script
@@ -10,8 +14,8 @@ export async function getHighlights(): Promise<Highlight[]> {
     return [];
   }
   try {
-    const response = await sendMessage<Highlight[]>({
-      action: "getHighlights",
+    const response = await runtimeSendMessage<Highlight[]>({
+      action: MessageActions.GET_HIGHLIGHTS,
     });
     return response || [];
   } catch (error) {
@@ -29,8 +33,8 @@ export async function saveHighlight(highlight: Highlight): Promise<boolean> {
     return true;
   }
   try {
-    await sendMessage<boolean>({
-      action: "saveHighlight",
+    await runtimeSendMessage<boolean>({
+      action: MessageActions.SAVE_HIGHLIGHT,
       highlight,
     });
     return true;
@@ -49,8 +53,8 @@ export async function deleteHighlight(id: string): Promise<boolean> {
     return true;
   }
   try {
-    await sendMessage<boolean>({
-      action: "deleteHighlight",
+    await runtimeSendMessage<boolean>({
+      action: MessageActions.DELETE_HIGHLIGHT,
       id,
     });
     return true;

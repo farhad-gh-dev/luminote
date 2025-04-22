@@ -1,58 +1,51 @@
 import { Highlight } from "../types";
 import { saveHighlight } from "../services/highlight-service";
+import { runtimeSendMessage, tabSendMessage } from "../services/chrome-adapter";
+import { MessageActions } from "../constants/message-actions";
+import { MenuIds } from "../constants";
 
-/**
- * Save selected text from a tab
- */
-function saveSelectionFromTab(tab: chrome.tabs.Tab): void {
+async function saveSelectionFromTab(tab: chrome.tabs.Tab): Promise<void> {
   if (!tab.id) return;
 
-  chrome.tabs.sendMessage(
-    tab.id,
-    { action: "getSelectionInfo" },
-    async (response) => {
-      if (chrome.runtime.lastError) {
-        console.error("Error sending message:", chrome.runtime.lastError);
-        return;
-      }
+  try {
+    const response = await tabSendMessage<{ text: string }>(tab.id, {
+      action: MessageActions.GET_SELECTION_INFO,
+    });
 
-      if (response) {
-        try {
-          const highlight: Highlight = {
-            id: crypto.randomUUID(),
-            text: response.text,
-            url: tab.url || "",
-            title: tab.title || "",
-            createdAt: new Date().toISOString(),
-          };
+    if (response && response.text) {
+      const highlight: Highlight = {
+        id: crypto.randomUUID(),
+        text: response.text,
+        url: tab.url || "",
+        title: tab.title || "",
+        createdAt: new Date().toISOString(),
+      };
 
-          await saveHighlight(highlight);
+      await saveHighlight(highlight);
 
-          // Notify the extension popup if it's open
-          chrome.runtime
-            .sendMessage({
-              action: "highlightSaved",
-              highlight,
-            })
-            .catch(() => {
-              // Ignore error if popup is not open
-            });
-        } catch (error) {
-          console.error("Failed to save selection:", error);
-        }
-      }
+      // Notify the extension popup if it's open using runtimeSendMessage
+      await runtimeSendMessage({
+        action: MessageActions.HIGHLIGHT_SAVED,
+        highlight,
+      }).catch(() => {
+        // Ignore error if popup is not open or cannot receive the message
+        console.log(
+          "Popup not open or unable to receive 'highlightSaved' message."
+        );
+      });
+    } else {
+      console.log("No text selected or received from tab:", tab.id);
     }
-  );
+  } catch (error) {
+    console.error("Error saving selection from tab:", tab.id, error);
+  }
 }
 
-/**
- * Initialize the context menu
- */
 export function initializeContextMenu(): void {
   // Set up context menu
   chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({
-      id: "highlightSelection",
+      id: MenuIds.HIGHLIGHT_SELECTION,
       title: "Save to Luminote",
       contexts: ["selection"],
     });
@@ -60,7 +53,7 @@ export function initializeContextMenu(): void {
 
   // Handle context menu clicks
   chrome.contextMenus.onClicked.addListener((info, tab) => {
-    if (info.menuItemId === "highlightSelection" && tab && tab.id) {
+    if (info.menuItemId === MenuIds.HIGHLIGHT_SELECTION && tab && tab.id) {
       saveSelectionFromTab(tab);
     }
   });

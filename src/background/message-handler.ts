@@ -4,10 +4,8 @@ import {
   getHighlights,
   deleteHighlight,
 } from "../services/highlight-service";
+import { MessageActions } from "../constants/message-actions";
 
-/**
- * Handle saving a highlight
- */
 async function handleSaveHighlight(highlight: Highlight): Promise<void> {
   try {
     await saveHighlight(highlight);
@@ -15,7 +13,7 @@ async function handleSaveHighlight(highlight: Highlight): Promise<void> {
     // Notify the extension popup if it's open
     chrome.runtime
       .sendMessage({
-        action: "highlightSaved",
+        action: MessageActions.HIGHLIGHT_SAVED,
         highlight,
       })
       .catch(() => {
@@ -26,9 +24,6 @@ async function handleSaveHighlight(highlight: Highlight): Promise<void> {
   }
 }
 
-/**
- * Handle retrieving all highlights
- */
 async function handleGetHighlights(): Promise<Highlight[]> {
   try {
     return await getHighlights();
@@ -38,9 +33,6 @@ async function handleGetHighlights(): Promise<Highlight[]> {
   }
 }
 
-/**
- * Handle deleting a highlight
- */
 async function handleDeleteHighlight(id: string): Promise<boolean> {
   try {
     return await deleteHighlight(id);
@@ -50,24 +42,21 @@ async function handleDeleteHighlight(id: string): Promise<boolean> {
   }
 }
 
-/**
- * Initialize the message handler
- */
 export function initializeMessageHandler(): void {
   chrome.runtime.onMessage.addListener(
     (message: Message, _sender, sendResponse) => {
       switch (message.action) {
-        case "saveHighlight":
+        case MessageActions.SAVE_HIGHLIGHT:
           if (message.highlight) {
             handleSaveHighlight(message.highlight);
           }
           break;
 
-        case "getHighlights":
+        case MessageActions.GET_HIGHLIGHTS:
           handleGetHighlights().then(sendResponse);
           return true; // Return true for async response
 
-        case "deleteHighlight":
+        case MessageActions.DELETE_HIGHLIGHT:
           if (message.id) {
             handleDeleteHighlight(message.id).then(sendResponse);
             return true; // Return true for async response

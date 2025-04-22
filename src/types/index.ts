@@ -1,3 +1,6 @@
+import { StorageKeys } from "../constants";
+import { MessageActions } from "../constants/message-actions";
+
 export interface Highlight {
   id: string;
   text: string;
@@ -8,15 +11,14 @@ export interface Highlight {
   color?: string;
 }
 
-export type MessageAction =
-  | "saveHighlight"
-  | "getHighlights"
-  | "deleteHighlight"
-  | "highlightSaved"
-  | "getSelectionInfo";
+// Use the type from the constants file
+export type MessageActionType =
+  (typeof MessageActions)[keyof typeof MessageActions];
+
+export type StorageKeyType = (typeof StorageKeys)[keyof typeof StorageKeys];
 
 export interface Message {
-  action: MessageAction;
+  action: MessageActionType;
   highlight?: Highlight;
   id?: string;
   text?: string;

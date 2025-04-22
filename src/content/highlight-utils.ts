@@ -3,9 +3,8 @@
 import { v4 as uuidv4 } from "uuid";
 import { Highlight, SelectionInfo } from "../types";
 
-/**
- * Get information about the current text selection
- */
+const SAVE_HIGHLIGHT = "saveHighlight";
+
 export function getSelectionInfo(): SelectionInfo | null {
   const selection = window.getSelection();
   if (!selection || selection.toString().trim() === "") {
@@ -19,9 +18,6 @@ export function getSelectionInfo(): SelectionInfo | null {
   };
 }
 
-/**
- * Apply visual styling to highlight the selected text
- */
 export function applyHighlightStyling(selection: Selection): void {
   if (!selection || selection.rangeCount === 0) return;
 
@@ -37,9 +33,6 @@ export function applyHighlightStyling(selection: Selection): void {
   }
 }
 
-/**
- * Create a highlight object from the current selection
- */
 export function createHighlightFromSelection(
   selectionInfo: SelectionInfo
 ): Highlight {
@@ -52,14 +45,11 @@ export function createHighlightFromSelection(
   };
 }
 
-/**
- * Save a highlight by sending it to the background script
- */
 export function saveHighlightToStorage(highlight: Highlight): Promise<void> {
   return new Promise((resolve, reject) => {
     chrome.runtime.sendMessage(
       {
-        action: "saveHighlight",
+        action: SAVE_HIGHLIGHT,
         highlight,
       },
       () => {

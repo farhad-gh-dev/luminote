@@ -1,13 +1,7 @@
-/**
- * Function to manage the highlight popup UI
- */
 let popup: HTMLDivElement | null = null;
 let isActive = false;
 let currentSelection: Selection | null = null;
 
-/**
- * Creates and shows the highlight popup near the current text selection
- */
 export function showHighlightPopup(
   selection: Selection,
   onHighlightClick: () => void
@@ -55,9 +49,6 @@ export function showHighlightPopup(
   isActive = true;
 }
 
-/**
- * Removes the highlight popup from the DOM
- */
 export function removeHighlightPopup(): void {
   if (popup) {
     popup.remove();
@@ -66,31 +57,19 @@ export function removeHighlightPopup(): void {
   }
 }
 
-/**
- * Checks if the given element is inside the popup
- */
 export function popupContainsElement(element: Node | null): boolean {
   if (!popup || !element) return false;
   return popup.contains(element);
 }
 
-/**
- * Checks if the popup is currently active/visible
- */
 export function isPopupActive(): boolean {
   return isActive;
 }
 
-/**
- * Gets the current text selection
- */
 export function getCurrentSelection(): Selection | null {
   return currentSelection;
 }
 
-/**
- * Adds the necessary CSS styles to the document
- */
 export function injectStyles(): void {
   const style = document.createElement("style");
   style.textContent = `
