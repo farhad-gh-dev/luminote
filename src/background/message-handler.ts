@@ -6,7 +6,7 @@ import {
 } from "../services/highlight-service";
 import { MessageActions } from "../constants/message-actions";
 
-async function handleSaveHighlight(highlight: Highlight): Promise<void> {
+async function handleSaveHighlight(highlight: Highlight): Promise<boolean> {
   try {
     await saveHighlight(highlight);
 
@@ -19,8 +19,10 @@ async function handleSaveHighlight(highlight: Highlight): Promise<void> {
       .catch(() => {
         // Ignore error if popup is not open
       });
+    return true;
   } catch (error) {
     console.error("Error in handleSaveHighlight:", error);
+    return false;
   }
 }
 
@@ -48,7 +50,8 @@ export function initializeMessageHandler(): void {
       switch (message.action) {
         case MessageActions.SAVE_HIGHLIGHT:
           if (message.highlight) {
-            handleSaveHighlight(message.highlight);
+            handleSaveHighlight(message.highlight).then(sendResponse);
+            return true; // Return true for async response
           }
           break;
 
