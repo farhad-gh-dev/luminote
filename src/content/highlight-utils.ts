@@ -1,7 +1,7 @@
 // Utilities for handling highlights
 
 import { v4 as uuidv4 } from "uuid";
-import { Highlight, SelectionInfo } from "../types";
+import { Highlight, SelectionInfo } from "@/types";
 
 // MessageActions constant obj can not be used for contact-script modules due to seperate bundling
 const SAVE_HIGHLIGHT = "saveHighlight";

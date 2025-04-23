@@ -1,21 +1,19 @@
-import { Highlight, Message } from "../types";
+import browser from "webextension-polyfill";
 import {
   saveHighlight,
   getHighlights,
   deleteHighlight,
-} from "../services/highlight-service";
-import { MessageActions } from "../constants/message-actions";
+} from "@/services/highlight-service";
+import { MessageActions } from "@/constants/message-actions";
+import type { Highlight, Message } from "@/types";
 
 async function handleSaveHighlight(highlight: Highlight): Promise<boolean> {
   try {
     await saveHighlight(highlight);
 
     // Notify the extension popup if it's open
-    chrome.runtime
-      .sendMessage({
-        action: MessageActions.HIGHLIGHT_SAVED,
-        highlight,
-      })
+    await browser.runtime
+      .sendMessage({ action: MessageActions.HIGHLIGHT_SAVED, highlight })
       .catch(() => {
         // Ignore error if popup is not open
       });
@@ -45,30 +43,37 @@ async function handleDeleteHighlight(id: string): Promise<boolean> {
 }
 
 export function initializeMessageHandler(): void {
-  chrome.runtime.onMessage.addListener(
-    (message: Message, _sender, sendResponse) => {
-      switch (message.action) {
+  browser.runtime.onMessage.addListener(
+    (
+      message: unknown,
+      _sender: browser.Runtime.MessageSender,
+      sendResponse: (response: unknown) => void
+    ): true => {
+      const msg = message as Message;
+
+      switch (msg.action) {
         case MessageActions.SAVE_HIGHLIGHT:
-          if (message.highlight) {
-            handleSaveHighlight(message.highlight).then(sendResponse);
-            return true; // Return true for async response
+          if (msg.highlight) {
+            handleSaveHighlight(msg.highlight).then(sendResponse);
           }
           break;
 
         case MessageActions.GET_HIGHLIGHTS:
           handleGetHighlights().then(sendResponse);
-          return true; // Return true for async response
+          break;
 
         case MessageActions.DELETE_HIGHLIGHT:
-          if (message.id) {
-            handleDeleteHighlight(message.id).then(sendResponse);
-            return true; // Return true for async response
+          if (msg.id) {
+            handleDeleteHighlight(msg.id).then(sendResponse);
           }
           break;
 
         default:
-          console.warn(`Unknown message action: ${message.action}`);
+          console.warn(`Unknown message action: ${msg.action}`);
       }
+
+      // Always return true so TS sees your callback returns the literal `true`
+      return true;
     }
   );
 }

@@ -1,5 +1,5 @@
-import { StorageKeys } from "../constants";
-import { MessageActions } from "../constants/message-actions";
+import { StorageKeys } from "@/constants";
+import { MessageActions } from "@/constants/message-actions";
 
 export interface Highlight {
   id: string;

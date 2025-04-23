@@ -1,4 +1,4 @@
-import type { Highlight } from "../../types";
+import type { Highlight } from "@/types";
 
 interface HighlightsListProps {
   initialHighlights: Highlight[];

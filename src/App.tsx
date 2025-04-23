@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import Header from "./components/layout/header";
-import HighlightsList from "./features/highlights/highlights-list";
-import { getHighlights } from "./services/chrome-api";
-import type { Highlight } from "./types";
+import Header from "@/components/layout/header";
+import HighlightsList from "@/features/highlights/highlights-list";
+import { getHighlights } from "@/services/chrome-api";
+import type { Highlight } from "@/types";
 
 function App() {
   const [highlights, setHighlights] = useState<Highlight[]>([]);

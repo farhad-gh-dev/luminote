@@ -1,39 +1,25 @@
-import { isExtensionEnvironment, runtimeSendMessage } from "./chrome-adapter";
-import type { Highlight } from "../types";
-import { MessageActions } from "../constants/message-actions";
+import browser from "webextension-polyfill";
+import { MessageActions } from "@/constants/message-actions";
+import type { Highlight } from "@/types";
 
 // Provides an API for UI components (like popup) to communicate
 // with the background script via messages. Does not interact directly with storage.
 
-/**
- * Fetch highlights from the background script
- */
 export async function getHighlights(): Promise<Highlight[]> {
-  if (!isExtensionEnvironment()) {
-    console.log("Using mock data (development mode)");
-    return [];
-  }
   try {
-    const response = await runtimeSendMessage<Highlight[]>({
+    const response = await browser.runtime.sendMessage({
       action: MessageActions.GET_HIGHLIGHTS,
     });
-    return response || [];
+    return (response as Highlight[]) || [];
   } catch (error) {
     console.error("Error fetching highlights:", error);
     return [];
   }
 }
 
-/**
- * Save a highlight via the background script
- */
 export async function saveHighlight(highlight: Highlight): Promise<boolean> {
-  if (!isExtensionEnvironment()) {
-    console.log("Mock save highlight (development mode)");
-    return true;
-  }
   try {
-    await runtimeSendMessage<boolean>({
+    await browser.runtime.sendMessage({
       action: MessageActions.SAVE_HIGHLIGHT,
       highlight,
     });
@@ -44,16 +30,9 @@ export async function saveHighlight(highlight: Highlight): Promise<boolean> {
   }
 }
 
-/**
- * Delete a highlight via the background script
- */
 export async function deleteHighlight(id: string): Promise<boolean> {
-  if (!isExtensionEnvironment()) {
-    console.log("Mock delete highlight (development mode)");
-    return true;
-  }
   try {
-    await runtimeSendMessage<boolean>({
+    await browser.runtime.sendMessage({
       action: MessageActions.DELETE_HIGHLIGHT,
       id,
     });

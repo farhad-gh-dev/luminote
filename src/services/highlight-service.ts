@@ -1,19 +1,13 @@
-import { Highlight } from "../types";
-import { storageGet, storageSet } from "./chrome-adapter";
-import { StorageKeys } from "../constants";
+import browser from "webextension-polyfill";
+import { StorageKeys } from "@/constants";
+import type { Highlight } from "@/types";
 
-// Provides functions for directly interacting with Chrome storage (via chrome-adapter)
 // to manage highlights. Primarily used by the background script.
 
-/**
- * Retrieves all highlights from Chrome storage
- */
 export async function getHighlights(): Promise<Highlight[]> {
   try {
-    const result = await storageGet<{ highlights?: Highlight[] }>(
-      StorageKeys.HIGHLIGHTS
-    );
-    return result.highlights || [];
+    const result = await browser.storage.sync.get(StorageKeys.HIGHLIGHTS);
+    return (result as { highlights?: Highlight[] }).highlights || [];
   } catch (error) {
     console.error("Error retrieving highlights:", error);
     throw new Error(
@@ -24,17 +18,15 @@ export async function getHighlights(): Promise<Highlight[]> {
   }
 }
 
-/**
- * Stores a highlight in Chrome storage
- */
 export async function saveHighlight(highlight: Highlight): Promise<void> {
   try {
-    const result = await storageGet<{ highlights?: Highlight[] }>(
-      StorageKeys.HIGHLIGHTS
-    );
-    const highlights = result.highlights || [];
+    const result = await browser.storage.sync.get(StorageKeys.HIGHLIGHTS);
+    const highlights =
+      (result as { highlights?: Highlight[] }).highlights || [];
     const updatedHighlights = [highlight, ...highlights];
-    await storageSet({ [StorageKeys.HIGHLIGHTS]: updatedHighlights });
+    await browser.storage.sync.set({
+      [StorageKeys.HIGHLIGHTS]: updatedHighlights,
+    });
   } catch (error) {
     console.error("Error saving highlight:", error);
     throw new Error(
@@ -45,20 +37,18 @@ export async function saveHighlight(highlight: Highlight): Promise<void> {
   }
 }
 
-/**
- * Deletes a highlight from Chrome storage
- */
 export async function deleteHighlight(id: string): Promise<boolean> {
   try {
-    const result = await storageGet<{ highlights?: Highlight[] }>(
-      StorageKeys.HIGHLIGHTS
-    );
-    const highlights = result.highlights || [];
+    const result = await browser.storage.sync.get(StorageKeys.HIGHLIGHTS);
+    const highlights =
+      (result as { highlights?: Highlight[] }).highlights || [];
     const updatedHighlights = highlights.filter(
       (highlight: Highlight) => highlight.id !== id
     );
 
-    await storageSet({ [StorageKeys.HIGHLIGHTS]: updatedHighlights });
+    await browser.storage.sync.set({
+      [StorageKeys.HIGHLIGHTS]: updatedHighlights,
+    });
     return true;
   } catch (error) {
     console.error("Error deleting highlight:", error);

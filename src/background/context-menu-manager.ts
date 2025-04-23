@@ -1,16 +1,16 @@
-import { Highlight } from "../types";
-import { saveHighlight } from "../services/highlight-service";
-import { runtimeSendMessage, tabSendMessage } from "../services/chrome-adapter";
-import { MessageActions } from "../constants/message-actions";
-import { MenuIds } from "../constants";
+import browser from "webextension-polyfill";
+import { saveHighlight } from "@/services/highlight-service";
+import { MessageActions } from "@/constants/message-actions";
+import { MenuIds } from "@/constants";
+import type { Highlight } from "@/types";
 
-async function saveSelectionFromTab(tab: chrome.tabs.Tab): Promise<void> {
+async function saveSelectionFromTab(tab: browser.Tabs.Tab): Promise<void> {
   if (!tab.id) return;
 
   try {
-    const response = await tabSendMessage<{ text: string }>(tab.id, {
+    const response = (await browser.tabs.sendMessage(tab.id, {
       action: MessageActions.GET_SELECTION_INFO,
-    });
+    })) as { text: string };
 
     if (response && response.text) {
       const highlight: Highlight = {
@@ -23,16 +23,18 @@ async function saveSelectionFromTab(tab: chrome.tabs.Tab): Promise<void> {
 
       await saveHighlight(highlight);
 
-      // Notify the extension popup if it's open using runtimeSendMessage
-      await runtimeSendMessage({
-        action: MessageActions.HIGHLIGHT_SAVED,
-        highlight,
-      }).catch(() => {
-        // Ignore error if popup is not open or cannot receive the message
-        console.log(
-          "Popup not open or unable to receive 'highlightSaved' message."
-        );
-      });
+      // Notify the extension popup if it's open
+      await browser.runtime
+        .sendMessage({
+          action: MessageActions.HIGHLIGHT_SAVED,
+          highlight,
+        })
+        .catch(() => {
+          // Ignore error if popup is not open or cannot receive the message
+          console.log(
+            "Popup not open or unable to receive 'highlightSaved' message."
+          );
+        });
     } else {
       console.log("No text selected or received from tab:", tab.id);
     }
@@ -43,8 +45,8 @@ async function saveSelectionFromTab(tab: chrome.tabs.Tab): Promise<void> {
 
 export function initializeContextMenu(): void {
   // Set up context menu
-  chrome.runtime.onInstalled.addListener(() => {
-    chrome.contextMenus.create({
+  browser.runtime.onInstalled.addListener(() => {
+    browser.contextMenus.create({
       id: MenuIds.HIGHLIGHT_SELECTION,
       title: "Save to Luminote",
       contexts: ["selection"],
@@ -52,7 +54,7 @@ export function initializeContextMenu(): void {
   });
 
   // Handle context menu clicks
-  chrome.contextMenus.onClicked.addListener((info, tab) => {
+  browser.contextMenus.onClicked.addListener((info, tab) => {
     if (info.menuItemId === MenuIds.HIGHLIGHT_SELECTION && tab && tab.id) {
       saveSelectionFromTab(tab);
     }
