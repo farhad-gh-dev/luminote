@@ -1,10 +1,9 @@
 // Utilities for handling highlights
 
+import browser from "webextension-polyfill";
 import { v4 as uuidv4 } from "uuid";
-import { Highlight, SelectionInfo } from "@/types";
-
-// MessageActions constant obj can not be used for contact-script modules due to seperate bundling
-const SAVE_HIGHLIGHT = "saveHighlight";
+import { MessageActions } from "@/constants/message-actions";
+import type { Highlight, SelectionInfo } from "@/types";
 
 export function getSelectionInfo(): SelectionInfo | null {
   const selection = window.getSelection();
@@ -47,19 +46,8 @@ export function createHighlightFromSelection(
 }
 
 export function saveHighlightToStorage(highlight: Highlight): Promise<void> {
-  return new Promise((resolve, reject) => {
-    chrome.runtime.sendMessage(
-      {
-        action: SAVE_HIGHLIGHT,
-        highlight,
-      },
-      () => {
-        if (chrome.runtime.lastError) {
-          reject(chrome.runtime.lastError);
-        } else {
-          resolve();
-        }
-      }
-    );
+  return browser.runtime.sendMessage({
+    action: MessageActions.SAVE_HIGHLIGHT,
+    highlight,
   });
 }

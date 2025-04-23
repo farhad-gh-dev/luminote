@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build:ui": "vite build --config vite.ui.config.ts",
+    "build:content": "vite build --config vite.content.config.ts",
+    "build": "npm run build:ui && npm run build:content",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -16,11 +18,11 @@
     "react-dom": "^19.0.0",
     "tailwindcss": "^4.1.4",
     "uuid": "^11.1.0",
+    "vite-plugin-node-polyfills": "^0.23.0",
     "vite-plugin-static-copy": "^2.3.1",
     "webextension-polyfill": "^0.12.0"
   },
   "devDependencies": {
-    "@crxjs/vite-plugin": "^1.0.14",
     "@eslint/js": "^9.22.0",
     "@types/chrome": "^0.0.315",
     "@types/node": "^22.14.1",
