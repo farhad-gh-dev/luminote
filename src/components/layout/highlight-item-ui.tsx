@@ -1,5 +1,6 @@
 import React from "react";
 import classNames from "classnames";
+import LoadingSpinner from "@/components/common/loading-spinner";
 
 // Interface for the UI props of a highlight item
 export interface HighlightItemUIProps {
@@ -11,6 +12,7 @@ export interface HighlightItemUIProps {
   color?: string;
   hostname: string;
   onDelete: (id: string) => void;
+  isDeleting?: boolean;
 }
 
 const HighlightItemUI: React.FC<HighlightItemUIProps> = ({
@@ -22,9 +24,15 @@ const HighlightItemUI: React.FC<HighlightItemUIProps> = ({
   color,
   hostname,
   onDelete,
+  isDeleting = false,
 }) => {
   return (
     <div className="bg-white rounded-lg p-3 shadow-sm border border-gray-100 hover:shadow-md transition-shadow relative">
+      {isDeleting && (
+        <div className="absolute inset-0 bg-white bg-opacity-70 flex items-center justify-center rounded-lg z-10">
+          <LoadingSpinner size="sm" />
+        </div>
+      )}
       <div className="flex justify-between items-start mb-2">
         <h3 className="text-sm font-semibold text-gray-700 truncate flex-grow">
           {title}
@@ -59,6 +67,7 @@ const HighlightItemUI: React.FC<HighlightItemUIProps> = ({
             className="text-gray-400 hover:text-red-500 p-1"
             title="Delete highlight"
             aria-label="Delete highlight"
+            disabled={isDeleting}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

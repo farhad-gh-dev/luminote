@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
 import Header from "@/components/layout/header";
-import HighlightsList from "@/features/highlights/highlights-list";
-import { getHighlights } from "@/services/chrome-api";
+import HighlightsList from "@/features/popup/highlights-list";
+import EmptyState from "@/components/layout/empty-state";
+import Loading from "@/components/common/loading";
+import { getHighlights, deleteHighlight } from "@/services/chrome-api";
 import type { Highlight } from "@/types";
 
 function App() {
   const [highlights, setHighlights] = useState<Highlight[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
   useEffect(() => {
     const loadHighlights = async () => {
@@ -25,17 +28,42 @@ function App() {
     loadHighlights();
   }, []);
 
+  // Handle highlight deletion
+  const handleDeleteHighlight = async (id: string) => {
+    try {
+      setIsDeleting(id);
+      const success = await deleteHighlight(id);
+
+      if (success) {
+        setHighlights(highlights.filter((highlight) => highlight.id !== id));
+      } else {
+        console.error("Failed to delete highlight");
+      }
+    } catch (error) {
+      console.error("Error deleting highlight:", error);
+    } finally {
+      setIsDeleting(null);
+    }
+  };
+
   return (
-    <div className="w-96 h-[600px] bg-gray-50 p-4 flex flex-col">
+    <div className="w-96 h-[600px] bg-white p-4 flex flex-col">
       <Header />
       {loading ? (
-        <div className="flex-grow flex items-center justify-center">
-          <div className="text-gray-500">Loading highlights...</div>
-        </div>
+        <Loading message="Loading highlights..." className="flex-grow" />
       ) : (
-        <HighlightsList initialHighlights={highlights} />
+        <div className="flex-grow overflow-y-auto">
+          {highlights.length > 0 ? (
+            <HighlightsList
+              highlights={highlights}
+              onDeleteHighlight={handleDeleteHighlight}
+              isDeleting={isDeleting}
+            />
+          ) : (
+            <EmptyState />
+          )}
+        </div>
       )}
-      {JSON.stringify(highlights)}
     </div>
   );
 }
