@@ -1,13 +1,9 @@
-import browser from "webextension-polyfill";
-import { StorageKeys } from "@/constants";
+import { db } from "./db";
 import type { Highlight } from "@/types";
-
-// to manage highlights. Primarily used by the background script.
 
 export async function getHighlights(): Promise<Highlight[]> {
   try {
-    const result = await browser.storage.sync.get(StorageKeys.HIGHLIGHTS);
-    return (result as { highlights?: Highlight[] }).highlights || [];
+    return await db.getAllHighlights();
   } catch (error) {
     console.error("Error retrieving highlights:", error);
     throw new Error(
@@ -20,13 +16,7 @@ export async function getHighlights(): Promise<Highlight[]> {
 
 export async function saveHighlight(highlight: Highlight): Promise<void> {
   try {
-    const result = await browser.storage.sync.get(StorageKeys.HIGHLIGHTS);
-    const highlights =
-      (result as { highlights?: Highlight[] }).highlights || [];
-    const updatedHighlights = [highlight, ...highlights];
-    await browser.storage.sync.set({
-      [StorageKeys.HIGHLIGHTS]: updatedHighlights,
-    });
+    await db.addHighlight(highlight);
   } catch (error) {
     console.error("Error saving highlight:", error);
     throw new Error(
@@ -39,21 +29,54 @@ export async function saveHighlight(highlight: Highlight): Promise<void> {
 
 export async function deleteHighlight(id: string): Promise<boolean> {
   try {
-    const result = await browser.storage.sync.get(StorageKeys.HIGHLIGHTS);
-    const highlights =
-      (result as { highlights?: Highlight[] }).highlights || [];
-    const updatedHighlights = highlights.filter(
-      (highlight: Highlight) => highlight.id !== id
-    );
-
-    await browser.storage.sync.set({
-      [StorageKeys.HIGHLIGHTS]: updatedHighlights,
-    });
+    await db.deleteHighlight(id);
     return true;
   } catch (error) {
     console.error("Error deleting highlight:", error);
     throw new Error(
       `Failed to delete highlight: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+  }
+}
+
+export async function updateHighlight(highlight: Highlight): Promise<boolean> {
+  try {
+    await db.updateHighlight(highlight);
+    return true;
+  } catch (error) {
+    console.error("Error updating highlight:", error);
+    throw new Error(
+      `Failed to update highlight: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+  }
+}
+
+export async function searchHighlights(
+  searchText: string
+): Promise<Highlight[]> {
+  try {
+    return await db.searchHighlights(searchText);
+  } catch (error) {
+    console.error("Error searching highlights:", error);
+    throw new Error(
+      `Failed to search highlights: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+  }
+}
+
+export async function getHighlightsByUrl(url: string): Promise<Highlight[]> {
+  try {
+    return await db.getHighlightsByUrl(url);
+  } catch (error) {
+    console.error("Error getting highlights by URL:", error);
+    throw new Error(
+      `Failed to get highlights by URL: ${
         error instanceof Error ? error.message : String(error)
       }`
     );

@@ -5,10 +5,10 @@ import { initializeMessageHandler } from "./message-handler";
  * Initialize the background script
  * Handles setup of message listeners and context menus
  */
-function initializeBackgroundScript(): void {
+async function initializeBackgroundScript(): Promise<void> {
   try {
+    // Initialize message handlers and context menus
     initializeMessageHandler();
-
     initializeContextMenu();
 
     console.log("Luminote background script initialized successfully");
