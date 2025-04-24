@@ -9,8 +9,8 @@ export const mockHighlights: Highlight[] = [
     createdAt: "2025-04-20T15:32:22.000Z",
     color: "yellow",
     tags: ["science", "inspiration"],
-    // website title
-    // website icon
+    websiteTitle: "Quotes.net",
+    websiteIconUrl: "https://www.quotes.net/favicon.ico",
   },
   {
     id: "550e8400-e29b-41d4-a716-446655440001",
@@ -20,6 +20,8 @@ export const mockHighlights: Highlight[] = [
     createdAt: "2025-04-21T10:24:15.000Z",
     color: "blue",
     tags: ["programming", "react"],
+    websiteTitle: "React",
+    websiteIconUrl: "https://reactjs.org/favicon.ico",
   },
   {
     id: "550e8400-e29b-41d4-a716-446655440002",
@@ -29,6 +31,8 @@ export const mockHighlights: Highlight[] = [
     createdAt: "2025-04-22T09:15:30.000Z",
     color: "green",
     tags: ["programming", "typescript"],
+    websiteTitle: "TypeScript",
+    websiteIconUrl: "https://www.typescriptlang.org/favicon-32x32.png",
   },
   {
     id: "550e8400-e29b-41d4-a716-446655440003",
@@ -38,6 +42,8 @@ export const mockHighlights: Highlight[] = [
     createdAt: "2025-04-23T14:05:10.000Z",
     color: "purple",
     tags: ["chrome", "development"],
+    websiteTitle: "Chrome Developers",
+    websiteIconUrl: "https://developer.chrome.com/favicon.ico",
   },
   {
     id: "550e8400-e29b-41d4-a716-446655440004",
@@ -46,5 +52,7 @@ export const mockHighlights: Highlight[] = [
     title: "Vite | Next Generation Frontend Tooling",
     createdAt: "2025-04-23T21:42:18.000Z",
     tags: ["tooling", "frontend"],
+    websiteTitle: "Vite",
+    websiteIconUrl: "https://vitejs.dev/logo.svg",
   },
 ];

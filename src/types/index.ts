@@ -9,6 +9,8 @@ export interface Highlight {
   createdAt: string;
   tags?: string[];
   color?: string;
+  websiteTitle?: string;
+  websiteIconUrl?: string;
 }
 
 // Use the type from the constants file
@@ -28,4 +30,6 @@ export interface SelectionInfo {
   text: string;
   url: string;
   title: string;
+  websiteTitle?: string;
+  websiteIconUrl?: string;
 }

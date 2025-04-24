@@ -11,6 +11,8 @@ export interface HighlightItemUIProps {
   formattedDate: string;
   color?: string;
   hostname: string;
+  websiteTitle?: string;
+  websiteIconUrl?: string;
   onDelete: (id: string) => void;
   isDeleting?: boolean;
 }
@@ -23,6 +25,8 @@ const HighlightItemUI: React.FC<HighlightItemUIProps> = ({
   formattedDate,
   color,
   hostname,
+  websiteTitle,
+  websiteIconUrl,
   onDelete,
   isDeleting = false,
 }) => {
@@ -56,9 +60,20 @@ const HighlightItemUI: React.FC<HighlightItemUIProps> = ({
           href={url}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-xs text-indigo-500 hover:text-indigo-700 overflow-hidden overflow-ellipsis whitespace-nowrap max-w-[200px]"
+          className="text-xs text-indigo-500 hover:text-indigo-700 overflow-hidden overflow-ellipsis whitespace-nowrap max-w-[200px] flex items-center gap-1"
         >
-          {hostname}
+          {websiteIconUrl && (
+            <img
+              src={websiteIconUrl}
+              alt={websiteTitle || hostname}
+              className="w-3.5 h-3.5 rounded"
+              onError={(e) => {
+                // Hide the image if it fails to load
+                (e.target as HTMLImageElement).style.display = "none";
+              }}
+            />
+          )}
+          <span>{websiteTitle || hostname}</span>
         </a>
         <div className="flex items-center space-x-2">
           <span className="text-xs text-gray-400">{formattedDate}</span>

@@ -46,6 +46,8 @@ const HighlightItem: React.FC<HighlightItemProps> = ({
       color={highlight.color}
       formattedDate={formattedDate}
       hostname={hostname}
+      websiteTitle={highlight.websiteTitle}
+      websiteIconUrl={highlight.websiteIconUrl}
       onDelete={handleDelete}
       isDeleting={isDeleting}
     />

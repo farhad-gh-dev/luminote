@@ -11,10 +11,29 @@ export function getSelectionInfo(): SelectionInfo | null {
     return null;
   }
 
+  // Get the website title (can be different than page title)
+  const websiteTitle =
+    document
+      .querySelector('meta[property="og:site_name"]')
+      ?.getAttribute("content") ||
+    new URL(window.location.href).hostname.replace("www.", "");
+
+  // Get favicon URL
+  const iconLink =
+    document.querySelector('link[rel="icon"]') ||
+    document.querySelector('link[rel="shortcut icon"]');
+  const faviconHref = iconLink ? iconLink.getAttribute("href") : "/favicon.ico";
+
+  // Convert relative URL to absolute URL if needed
+  const websiteIconUrl = new URL(faviconHref ?? "", window.location.origin)
+    .href;
+
   return {
     text: selection.toString(),
     url: window.location.href,
     title: document.title,
+    websiteTitle,
+    websiteIconUrl,
   };
 }
 
@@ -42,6 +61,8 @@ export function createHighlightFromSelection(
     url: selectionInfo.url,
     title: selectionInfo.title,
     createdAt: new Date().toISOString(),
+    websiteTitle: selectionInfo.websiteTitle,
+    websiteIconUrl: selectionInfo.websiteIconUrl,
   };
 }
 
