@@ -3,6 +3,7 @@ import {
   saveHighlight,
   getHighlights,
   deleteHighlight,
+  getHighlightsByUrl,
 } from "@/services/highlight-service";
 import { MessageActions } from "@/constants/message-actions";
 import type { Highlight, Message } from "@/types";
@@ -42,6 +43,15 @@ async function handleDeleteHighlight(id: string): Promise<boolean> {
   }
 }
 
+async function handleGetHighlightsByUrl(url: string): Promise<Highlight[]> {
+  try {
+    return await getHighlightsByUrl(url);
+  } catch (error) {
+    console.error("Error in handleGetHighlightsByUrl:", error);
+    return [];
+  }
+}
+
 export function initializeMessageHandler(): void {
   browser.runtime.onMessage.addListener(
     (
@@ -60,6 +70,15 @@ export function initializeMessageHandler(): void {
 
         case MessageActions.GET_HIGHLIGHTS:
           handleGetHighlights().then(sendResponse);
+          break;
+
+        case MessageActions.GET_HIGHLIGHTS_BY_URL:
+          if (msg.url) {
+            handleGetHighlightsByUrl(msg.url).then(sendResponse);
+          } else {
+            // If no URL is provided, return empty array
+            sendResponse([]);
+          }
           break;
 
         case MessageActions.DELETE_HIGHLIGHT:

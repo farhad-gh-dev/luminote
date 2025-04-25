@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import SearchIcon from "@/components/icons/search-icon";
+import CloseIcon from "@/components/icons/close-icon";
 
 interface SearchHighlightsProps {
   onSearch: (searchQuery: string) => void;
@@ -6,6 +8,7 @@ interface SearchHighlightsProps {
 
 const SearchHighlights: React.FC<SearchHighlightsProps> = ({ onSearch }) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [isFocused, setIsFocused] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -19,46 +22,34 @@ const SearchHighlights: React.FC<SearchHighlightsProps> = ({ onSearch }) => {
   };
 
   return (
-    <div className="relative mb-4">
-      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-        <svg
-          className="h-4 w-4 text-gray-400"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-        >
-          <path
-            fillRule="evenodd"
-            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-            clipRule="evenodd"
-          />
-        </svg>
+    <div className="relative mb-5">
+      <div
+        className={`absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none transition-all duration-200 ${
+          isFocused ? "text-indigo-500" : "text-gray-400"
+        }`}
+      >
+        <SearchIcon />
       </div>
       <input
         type="text"
         placeholder="Search highlights..."
-        className="pl-10 pr-10 py-2 w-full text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+        className={`pl-10 pr-10 py-2.5 w-full text-sm bg-white border rounded-md focus:outline-none transition-all duration-200 ${
+          isFocused
+            ? "border-indigo-500 shadow-sm ring-2 ring-indigo-100"
+            : "border-gray-200"
+        }`}
         value={searchQuery}
         onChange={handleChange}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
       />
       {searchQuery && (
         <button
           onClick={handleClear}
-          className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+          className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600 transition-colors duration-200"
           aria-label="Clear search"
         >
-          <svg
-            className="h-4 w-4"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fillRule="evenodd"
-              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-              clipRule="evenodd"
-            />
-          </svg>
+          <CloseIcon />
         </button>
       )}
     </div>

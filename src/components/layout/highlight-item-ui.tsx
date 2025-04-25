@@ -1,6 +1,7 @@
 import React from "react";
 import classNames from "classnames";
 import LoadingSpinner from "@/components/common/loading-spinner";
+import TrashIcon from "@/components/icons/trash-icon";
 
 // Interface for the UI props of a highlight item
 export interface HighlightItemUIProps {
@@ -31,42 +32,42 @@ const HighlightItemUI: React.FC<HighlightItemUIProps> = ({
   isDeleting = false,
 }) => {
   return (
-    <div className="bg-white rounded-lg p-3 shadow-sm border border-gray-100 hover:shadow-md transition-shadow relative">
+    <div className="bg-white rounded-lg p-4 shadow-md border border-gray-100 hover:shadow-lg transition-all duration-300 relative group">
       {isDeleting && (
-        <div className="absolute inset-0 bg-white bg-opacity-70 flex items-center justify-center rounded-lg z-10">
+        <div className="absolute inset-0 bg-white bg-opacity-70 flex items-center justify-center rounded-lg z-10 backdrop-blur-sm">
           <LoadingSpinner size="sm" />
         </div>
       )}
-      <div className="flex justify-between items-start mb-2">
-        <h3 className="text-sm font-semibold text-gray-700 truncate flex-grow">
+      <div className="flex justify-between items-start mb-3">
+        <h3 className="text-base font-semibold text-gray-800 truncate flex-grow pr-2">
           {title}
         </h3>
         <span
-          className={classNames("inline-block w-3 h-3 rounded-full", {
-            "bg-amber-300": color === "yellow",
-            "bg-emerald-300": color === "green",
-            "bg-sky-300": color === "blue",
-            "bg-violet-300": !color || color === "purple",
+          className={classNames("inline-block w-4 h-4 rounded-full shadow-sm", {
+            "bg-amber-400": color === "yellow",
+            "bg-emerald-400": color === "green",
+            "bg-sky-400": color === "blue",
+            "bg-violet-400": !color || color === "purple",
           })}
         />
       </div>
 
-      <div className="pl-2 border-l-2 border-indigo-200 mb-2">
-        <p className="text-sm text-gray-600">{text}</p>
+      <div className="pl-3 border-l-3 border-indigo-300 mb-3 hover:border-indigo-500 transition-colors duration-200">
+        <p className="text-sm text-gray-700 leading-relaxed">{text}</p>
       </div>
 
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center mt-2">
         <a
           href={url}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-xs text-indigo-500 hover:text-indigo-700 overflow-hidden overflow-ellipsis whitespace-nowrap max-w-[200px] flex items-center gap-1"
+          className="text-xs text-indigo-600 hover:text-indigo-800 overflow-hidden overflow-ellipsis whitespace-nowrap max-w-[200px] flex items-center gap-2 transition-colors duration-200"
         >
           {websiteIconUrl && (
             <img
               src={websiteIconUrl}
               alt={websiteTitle || hostname}
-              className="w-3.5 h-3.5 rounded"
+              className="w-4 h-4 rounded"
               onError={(e) => {
                 // Hide the image if it fails to load
                 (e.target as HTMLImageElement).style.display = "none";
@@ -75,27 +76,16 @@ const HighlightItemUI: React.FC<HighlightItemUIProps> = ({
           )}
           <span>{websiteTitle || hostname}</span>
         </a>
-        <div className="flex items-center space-x-2">
-          <span className="text-xs text-gray-400">{formattedDate}</span>
+        <div className="flex items-center space-x-3">
+          <span className="text-xs text-gray-500">{formattedDate}</span>
           <button
             onClick={() => onDelete(id)}
-            className="text-gray-400 hover:text-red-500 p-1"
+            className="text-gray-400 hover:text-red-500 p-1.5 rounded-full hover:bg-red-50 transition-all duration-200 opacity-70 group-hover:opacity-100"
             title="Delete highlight"
             aria-label="Delete highlight"
             disabled={isDeleting}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-3.5 w-3.5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                clipRule="evenodd"
-              />
-            </svg>
+            <TrashIcon />
           </button>
         </div>
       </div>

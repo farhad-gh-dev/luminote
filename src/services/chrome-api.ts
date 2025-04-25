@@ -17,6 +17,19 @@ export async function getHighlights(): Promise<Highlight[]> {
   }
 }
 
+export async function getHighlightsByUrl(url: string): Promise<Highlight[]> {
+  try {
+    const response = await browser.runtime.sendMessage({
+      action: MessageActions.GET_HIGHLIGHTS_BY_URL,
+      url,
+    });
+    return (response as Highlight[]) || [];
+  } catch (error) {
+    console.error("Error fetching highlights by URL:", error);
+    return [];
+  }
+}
+
 export async function saveHighlight(highlight: Highlight): Promise<boolean> {
   try {
     await browser.runtime.sendMessage({
