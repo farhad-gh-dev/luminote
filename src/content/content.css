@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+/* Animation for the popup */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.luminote-content-ui-root {
+  @apply animate-[fadeIn_0.2s_ease-out_forwards];
+}

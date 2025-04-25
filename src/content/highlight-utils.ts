@@ -72,3 +72,14 @@ export function saveHighlightToStorage(highlight: Highlight): Promise<void> {
     highlight,
   });
 }
+
+export function injectStyles(): void {
+  const style = document.createElement("style");
+  style.textContent = `
+    .luminote-highlighted-text {
+      background-color: rgba(99, 102, 241, 0.3);
+      border-radius: 2px;
+    }
+  `;
+  document.head.appendChild(style);
+}
