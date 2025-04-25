@@ -1,13 +1,15 @@
 import React from "react";
 import Button from "@/components/common/button";
 
-interface SelectionToolbarProps {
+interface AddHighlightToolbarProps {
   onHighlight: () => void;
 }
 
-const SelectionToolbar: React.FC<SelectionToolbarProps> = ({ onHighlight }) => {
+const AddHighlightToolbar: React.FC<AddHighlightToolbarProps> = ({
+  onHighlight,
+}) => {
   return (
-    <div className="flex flex-col gap-2 p-2 rounded-md shadow-lg bg-white">
+    <div className="bg-transparent">
       <Button variant="primary" size="md" onClick={onHighlight}>
         Highlight
       </Button>
@@ -15,4 +17,4 @@ const SelectionToolbar: React.FC<SelectionToolbarProps> = ({ onHighlight }) => {
   );
 };
 
-export default SelectionToolbar;
+export default AddHighlightToolbar;

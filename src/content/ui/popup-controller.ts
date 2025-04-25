@@ -1,10 +1,10 @@
-import { renderContentUI } from "@/content/shadow-dom-renderer";
+import { renderAddHighlightUI } from "./shadow-dom-renderer";
 import {
   getSelectionInfo,
-  applyHighlightStyling,
   createHighlightFromSelection,
-  saveHighlightToStorage,
-} from "./highlight-utils";
+} from "../utils/selection-utils";
+import { applyHighlightStyling } from "../utils/dom-highlight-utils";
+import { saveHighlightToStorage } from "../utils/highlight-storage";
 
 let currentUICleanup: (() => void) | null = null;
 let currentSelection: Selection | null = null;
@@ -26,7 +26,10 @@ export function handleSaveHighlight(): void {
   removeContentUI();
 }
 
-export function showContentUI(selection: Selection): void {
+export function showAddHighlightUI(
+  selection: Selection,
+  mousePosition: { x: number; y: number }
+): void {
   // Clean up any existing UI
   removeContentUI();
 
@@ -36,8 +39,12 @@ export function showContentUI(selection: Selection): void {
 
   currentSelection = selection;
 
-  // Render React UI in Shadow DOM
-  const { cleanup } = renderContentUI(selection, handleSaveHighlight);
+  // Render React UI in Shadow DOM, passing mouse position
+  const { cleanup } = renderAddHighlightUI(
+    selection,
+    handleSaveHighlight,
+    mousePosition
+  );
   currentUICleanup = cleanup;
 }
 

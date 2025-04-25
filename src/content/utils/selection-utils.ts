@@ -1,8 +1,6 @@
-// Utilities for handling highlights
+// Utilities for handling text selection
 
-import browser from "webextension-polyfill";
 import { v4 as uuidv4 } from "uuid";
-import { MessageActions } from "@/constants/message-actions";
 import type { Highlight, SelectionInfo } from "@/types";
 
 export function getSelectionInfo(): SelectionInfo | null {
@@ -11,14 +9,12 @@ export function getSelectionInfo(): SelectionInfo | null {
     return null;
   }
 
-  // Get the website title (can be different than page title)
   const websiteTitle =
     document
       .querySelector('meta[property="og:site_name"]')
       ?.getAttribute("content") ||
     new URL(window.location.href).hostname.replace("www.", "");
 
-  // Get favicon URL
   const iconLink =
     document.querySelector('link[rel="icon"]') ||
     document.querySelector('link[rel="shortcut icon"]');
@@ -37,21 +33,6 @@ export function getSelectionInfo(): SelectionInfo | null {
   };
 }
 
-export function applyHighlightStyling(selection: Selection): void {
-  if (!selection || selection.rangeCount === 0) return;
-
-  const range = selection.getRangeAt(0);
-  const highlightSpan = document.createElement("span");
-  highlightSpan.className = "luminote-highlighted-text";
-
-  try {
-    range.surroundContents(highlightSpan);
-    selection.removeAllRanges();
-  } catch (error) {
-    console.error("Failed to apply highlight styling:", error);
-  }
-}
-
 export function createHighlightFromSelection(
   selectionInfo: SelectionInfo
 ): Highlight {
@@ -64,22 +45,4 @@ export function createHighlightFromSelection(
     websiteTitle: selectionInfo.websiteTitle,
     websiteIconUrl: selectionInfo.websiteIconUrl,
   };
-}
-
-export function saveHighlightToStorage(highlight: Highlight): Promise<void> {
-  return browser.runtime.sendMessage({
-    action: MessageActions.SAVE_HIGHLIGHT,
-    highlight,
-  });
-}
-
-export function injectStyles(): void {
-  const style = document.createElement("style");
-  style.textContent = `
-    .luminote-highlighted-text {
-      background-color: rgba(99, 102, 241, 0.3);
-      border-radius: 2px;
-    }
-  `;
-  document.head.appendChild(style);
 }

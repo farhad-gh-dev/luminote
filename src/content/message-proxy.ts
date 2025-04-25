@@ -1,5 +1,5 @@
 import browser from "webextension-polyfill";
-import { getSelectionInfo } from "@/content/highlight-utils";
+import { getSelectionInfo } from "./utils/selection-utils";
 import { MessageActions } from "@/constants/message-actions";
 import type { Message } from "@/types";
 
