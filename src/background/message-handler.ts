@@ -36,7 +36,30 @@ async function handleGetHighlights(): Promise<Highlight[]> {
 
 async function handleDeleteHighlight(id: string): Promise<boolean> {
   try {
-    return await deleteHighlight(id);
+    // Get the highlight before deleting to send notification with highlight text
+    const highlights = await getHighlights();
+    const highlight = highlights.find((h) => h.id === id);
+
+    const result = await deleteHighlight(id);
+
+    if (result && highlight) {
+      // Notify all tabs that may have this highlight
+      const tabs = await browser.tabs.query({});
+      tabs.forEach((tab) => {
+        if (tab.id) {
+          browser.tabs
+            .sendMessage(tab.id, {
+              action: MessageActions.HIGHLIGHT_DELETED,
+              highlight,
+            })
+            .catch(() => {
+              // Ignore errors if content script is not available on this tab
+            });
+        }
+      });
+    }
+
+    return result;
   } catch (error) {
     console.error("Error in handleDeleteHighlight:", error);
     return false;

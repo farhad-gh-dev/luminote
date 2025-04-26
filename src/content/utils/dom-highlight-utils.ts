@@ -91,3 +91,20 @@ function highlightTextInNode(node: Text, textToHighlight: string): void {
     console.error("Failed to highlight text node:", error);
   }
 }
+
+export function removeHighlightFromDOM(text: string): void {
+  if (!text || text.trim().length === 0) return;
+
+  const textToFind = text.trim();
+  const highlightElements = document.querySelectorAll(
+    ".luminote-highlighted-text"
+  );
+
+  highlightElements.forEach((element) => {
+    if (element.textContent === textToFind) {
+      // Replace the highlighted element with just its text content
+      const textNode = document.createTextNode(element.textContent);
+      element.parentNode?.replaceChild(textNode, element);
+    }
+  });
+}

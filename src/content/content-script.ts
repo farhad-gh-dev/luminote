@@ -39,7 +39,7 @@ function applyHighlightsWhenReady(): void {
       .catch((error) =>
         console.error("Error applying stored highlights:", error)
       );
-  }, 500);
+  }, 1000);
 }
 
 function cleanup(): void {
