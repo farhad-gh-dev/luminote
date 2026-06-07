@@ -2,6 +2,7 @@ import browser from "webextension-polyfill";
 import { saveHighlight } from "@/services/highlight-service";
 import { MessageActions } from "@/constants/message-actions";
 import { MenuIds } from "@/constants";
+import { generateId } from "@/utils/generate-id";
 import type { Highlight } from "@/types";
 
 async function saveSelectionFromTab(tab: browser.Tabs.Tab): Promise<void> {
@@ -14,7 +15,7 @@ async function saveSelectionFromTab(tab: browser.Tabs.Tab): Promise<void> {
 
     if (response && response.text) {
       const highlight: Highlight = {
-        id: crypto.randomUUID(),
+        id: generateId(),
         text: response.text,
         url: tab.url || "",
         title: tab.title || "",

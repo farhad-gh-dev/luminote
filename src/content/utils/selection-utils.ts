@@ -1,6 +1,6 @@
 // Utilities for handling text selection
 
-import { v4 as uuidv4 } from "uuid";
+import { generateId } from "@/utils/generate-id";
 import type { Highlight, SelectionInfo } from "@/types";
 
 export function getSelectionInfo(): SelectionInfo | null {
@@ -37,7 +37,7 @@ export function createHighlightFromSelection(
   selectionInfo: SelectionInfo
 ): Highlight {
   return {
-    id: uuidv4(),
+    id: generateId(),
     text: selectionInfo.text,
     url: selectionInfo.url,
     title: selectionInfo.title,
