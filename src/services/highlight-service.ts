@@ -55,21 +55,6 @@ export async function updateHighlight(highlight: Highlight): Promise<boolean> {
   }
 }
 
-export async function searchHighlights(
-  searchText: string
-): Promise<Highlight[]> {
-  try {
-    return await db.searchHighlights(searchText);
-  } catch (error) {
-    console.error("Error searching highlights:", error);
-    throw new Error(
-      `Failed to search highlights: ${
-        error instanceof Error ? error.message : String(error)
-      }`
-    );
-  }
-}
-
 export async function getHighlightsByUrl(url: string): Promise<Highlight[]> {
   try {
     return await db.getHighlightsByUrl(url);

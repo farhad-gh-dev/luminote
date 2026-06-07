@@ -21,25 +21,6 @@ export class LumiNoteDatabase extends Dexie {
     return await this.highlights.toArray();
   }
 
-  async searchHighlights(searchText: string): Promise<Highlight[]> {
-    if (!searchText) return this.getAllHighlights();
-
-    const lowerSearchText = searchText.toLowerCase();
-    return await this.highlights
-      .filter(
-        (highlight) =>
-          highlight.text.toLowerCase().includes(lowerSearchText) ||
-          highlight.title.toLowerCase().includes(lowerSearchText) ||
-          (highlight.tags?.some(
-            (
-              tag // Use optional chaining
-            ) => tag.toLowerCase().includes(lowerSearchText)
-          ) ??
-            false) // Provide default false if tags is null/undefined
-      )
-      .toArray();
-  }
-
   async addHighlight(highlight: Highlight): Promise<string> {
     return await this.highlights.add(highlight);
   }
